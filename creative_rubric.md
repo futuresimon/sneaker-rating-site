@@ -5,19 +5,20 @@ framework: flask
 rubric (5 points)
 rubric is turned in on time (5 points)
 
-website functionality (20 points)
-users can sign in and log in to the website (5 points)
+website functionality (23 points)
+users can sign in and log in to the website (3 points)
+users can sign up as standard users or admins (5 points)
 users cannot alter other's posts (5 points)
 Relational database is configured with correct data types and foreign keys (5 points)
-users can upload picture, name and release date to the website (10 points)
+ONLY admins can upload picture, name and release date to the website (5 points)
 
 reviews (10 points)
 users can post reviews (text) and scores (out of 100) of sneakers (5 points)
 all points are averaged and displayed on the sneaker display page (5 points)
 
-usability (10 points)
+usability (7 points)
 site in intuitive to use and navigate (5 points)
-site is visually appealing (5 points)
+site is visually appealing (2 points)
 
 user home page (15 points)
 each user has a home page where their posts are listed (10 points)
