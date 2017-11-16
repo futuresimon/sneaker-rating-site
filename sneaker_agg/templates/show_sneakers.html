@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  {% if session.logged_in %}
+    <form action="{{ url_for('add_sneaker') }}" method=post enctype=multipart/form-data class=add-sneaker>
+      <dl>
+        <dt>Upload New Sneaker<dt>
+        <dt>Title:
+        <dd><input type=text size=30 name=title>
+        <dt>Picture:
+        <dd><input type=file name=file>
+        <dd><input type=submit value=Upload>
+      </dl>
+
+  {% endif %}
+  <ul class=sneakers>
+  {% for sneaker in sneakers %}
+    <li><h2>{{ sneaker.name }}</h2>
+      <img src= {{ sneaker.image_path }} > <br/>
+      <a href="{{ url_for('comments',sneakerid=sneaker.id) }}">Comments</a>
+      <a href="{{ url_for('add_to_favorites',sneakerid=sneaker.id) }}">Add To Favorites</a>
+      {% if session.id == sneaker.user_id %}
+      <a href="{{ url_for('delete_sneaker',userid=session.id,sneakerid=sneaker.id) }}">Delete Listing</a>
+      {% endif %}
+
+  {% else %}
+    <li><em>Unbelievable.  No entries here so far</em>
+  {% endfor %}
+  </ul>
+{% endblock %}

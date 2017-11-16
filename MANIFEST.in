@@ -1,0 +1,3 @@
+graft sneakeragg/templates
+graft sneakeragg/static
+include sneakeragg/schema.sql

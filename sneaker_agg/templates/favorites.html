@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+
+  <ul class=sneakers>
+  {% for favorite in favorites %}
+  {% if session.id == favorite.user_id %}
+    <li><h2>{{ favorite.name }}</h2><img src= {{ favorite.image_path }} > <br/>
+    <a href="{{ url_for('unfavorite',sneakerid=favorite.sneaker_id,userid=session.id) }}">Unfavorite</a>
+  {% endif %}
+  {% else %}
+    <li><em>No favorites so far. Try adding some!</em>
+  {% endfor %}
+  </ul>
+{% endblock %}

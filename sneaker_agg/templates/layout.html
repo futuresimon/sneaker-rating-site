@@ -1,0 +1,20 @@
+<!doctype html>
+<!-- This format was derived from the Flask App tutorial on the Flask Website: http://flask.pocoo.org/docs/0.12/tutorial/ -->
+<title>SneakerAgg</title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+<div class=page>
+  <h1><a href = "{{ url_for('show_sneakers') }}" >SneakerAgg</a></h1>
+  <div class=metanav>
+  {% if not session.logged_in %}
+    <a href="{{ url_for('login') }}">log in</a>
+    <a href="{{ url_for('signup') }}">sign up</a>
+  {% else %}
+    <a href="{{ url_for('favorites', userid = session.id) }}">Favorites</a>
+    <a href="{{ url_for('logout') }}">Log Out</a>
+  {% endif %}
+  </div>
+  {% for message in get_flashed_messages() %}
+    <div class=flash>{{ message }}</div>
+  {% endfor %}
+  {% block body %}{% endblock %}
+</div>
