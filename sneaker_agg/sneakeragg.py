@@ -75,7 +75,7 @@ def show_sneakers():
 def comments(sneakerid):
     one = 1
     db = get_db()
-    cur = db.execute('select id, review, rating, user_id, sneaker_id from reviews where sneaker_id = ? AND display = ? order by id desc',
+    cur = db.execute('select id, review, rating, user_id, sneaker_id FROM reviews WHERE sneaker_id = ? AND display = ? order by id desc',
                  [sneakerid, one])
     comments = cur.fetchall()
     return render_template('comments.html', comments = comments, sneakerid = sneakerid)
@@ -87,10 +87,51 @@ def add_comment(sneakerid):
     one = 1
     db = get_db()
     db.execute('insert into reviews (review, rating, user_id, sneaker_id, display) values (?, ?, ?, ?, ?)',
-                 [request.form['title'], request.form['text'],session['id'], sneakerid, one])
+                 [request.form['comment'], request.form['score'],session['id'], sneakerid, one])
     db.commit()
-    flash('New review was successfully posted')
+    flash('New comment was successfully posted')
     return redirect(url_for('comments', sneakerid = sneakerid))
+
+@app.route('/send_message', methods=['GET','POST'])
+def send_message():
+    if not session.get('logged_in'):
+        abort(401)
+    #if not session['id'] == int(senderid):
+    #    abort(401)
+    if request.method == 'POST':
+        one = 1
+        db = get_db()
+        cur = db.execute('SELECT COUNT(*), id FROM users WHERE username = ?',
+                     [request.form['username']])
+        recieveridFetch = cur.fetchall()
+        for row in recieveridFetch:
+            if row[0] > 1:
+                error = 'Couldnt send. More than one user found with that name.'
+            elif row[0] == 0:
+                error = 'Couldnt send. No user found with that name.'
+            else:
+                recieverid = row[1]
+                print(recieverid)
+                db.execute('INSERT INTO messages (message_body, sender_id, reciever_id) VALUES (?, ?, ?)',
+                             [request.form['message'], session['id'], recieverid])
+                db.commit()
+                flash('Message sent')
+                return redirect(url_for('profile', userid = session['id']))
+    return redirect(url_for('profile', error = error, userid = session['id']))
+
+@app.route('/profile/<userid>')
+def profile(userid):
+    if not session.get('logged_in'):
+        abort(401)
+    if not session['id'] == int(userid):
+        abort(401)
+    #one = 1
+    db = get_db()
+    cur = db.execute('SELECT message_body, reciever_id, sender_id FROM messages WHERE reciever_id = ?',
+                 [userid])
+    messages = cur.fetchall()
+    return render_template('profile.html', messages = messages, userid = userid)
+
 
 # from the flask upload file tutorial: http://flask.pocoo.org/docs/0.12/patterns/fileuploads/
 def allowed_file(filename):
@@ -102,6 +143,7 @@ def allowed_file(filename):
 def add_sneaker():
     error = None
     if request.method == 'POST':
+        #help from file upload tutorial http://flask.pocoo.org/docs/0.12/patterns/fileuploads/
         # check if the post request has the file part
         if 'file' not in request.files:
             flash('No file part')
@@ -113,6 +155,7 @@ def add_sneaker():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            #end help from file upload tutorial
             #insert into DB
             if not session.get('logged_in'):
                 abort(401)
@@ -126,6 +169,7 @@ def add_sneaker():
 
 @app.route('/delete_sneaker/<userid>/<sneakerid>')
 def delete_sneaker(userid, sneakerid):
+    #make sure this action is permitted
     if not session.get('logged_in'):
         abort(401)
     if not session['id'] == int(userid):
@@ -138,6 +182,7 @@ def delete_sneaker(userid, sneakerid):
     flash('Deleted')
     return redirect(url_for('show_sneakers'))
 
+#help from file upload tutorial
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
@@ -222,6 +267,7 @@ def login():
                  return redirect(url_for('show_sneakers'))
     return render_template('login.html', error=error)
 
+#from the set up tutorial
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)

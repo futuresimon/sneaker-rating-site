@@ -4,9 +4,15 @@
     <form action="{{ url_for('add_comment',sneakerid=sneakerid) }}" method=post class=add-entry>
       <dl>
         <dt>Comment:
-        <dd><input type=text size=30 name=title>
+        <dd><input type=text size=30 name=comment>
         <dt>Rating:
-        <dd><textarea name=text rows=5 cols=40></textarea>
+        <dd><select name=score>
+              <option value=1>1</option>
+              <option value=2>2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
         <dd><input type=submit value=Comment>
       </dl>
     </form>

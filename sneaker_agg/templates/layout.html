@@ -11,6 +11,7 @@
   {% else %}
     <a href="{{ url_for('favorites', userid = session.id) }}">Favorites</a>
     <a href="{{ url_for('logout') }}">Log Out</a>
+    <a href="{{ url_for('profile', userid = session.id) }}">View Messages</a>
   {% endif %}
   </div>
   {% for message in get_flashed_messages() %}

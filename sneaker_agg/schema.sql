@@ -17,6 +17,16 @@ create table reviews (
   FOREIGN KEY (sneaker_id) REFERENCES sneakers(id)
 );
 
+drop table if exists messages;
+create table messages (
+  id integer primary key autoincrement,
+  message_body text,
+  sender_id integer,
+  reciever_id integer,
+  FOREIGN KEY (sender_id) REFERENCES users(id),
+  FOREIGN KEY (reciever_id) REFERENCES users(id)
+);
+
 drop table if exists sneakers;
 create table sneakers (
   id integer primary key autoincrement,
