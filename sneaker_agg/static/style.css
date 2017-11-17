@@ -16,6 +16,8 @@ img{max-width: 75%;
 .sneakers li h2  { margin-left: -1em; }
 .add-sneaker      { font-size: 0.9em; border-bottom: 1px solid #ccc; }
 .add-sneaker dl   { font-weight: bold; }
+.search      { font-size: 0.9em; border-bottom: 1px solid #ccc; }
+.search dl   { font-weight: bold; }
 .metanav        { text-align: right; font-size: 0.8em; padding: 0.3em;
                   margin-bottom: 1em; background: #fafafa; }
 .flash          { background: #cee5F5; padding: 0.5em;

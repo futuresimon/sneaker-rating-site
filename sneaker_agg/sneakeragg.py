@@ -2,6 +2,7 @@
 # all the imports
 import os
 import sqlite3
+import secrets
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, send_from_directory
 from werkzeug.security import generate_password_hash, \
@@ -14,6 +15,8 @@ UPLOAD_FOLDER = '/home/simono/public_html/sneakeragg/sneakeragg/pictures'
 UPLOAD_FOLDER2 = 'home/simono/public_html/sneakeragg/sneakeragg/pictures'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 #end flask upload tutorial help
+
+adminPassword = 'supersecretpassword'
 
 #this set up is from the Flask quick start guide
 app = Flask(__name__) # create the application instance :)
@@ -65,9 +68,20 @@ def close_db(error):
 def show_sneakers():
     one = 1
     db = get_db()
-    cur = db.execute('select id, name, user_id, image_path from sneakers WHERE display = ? order by id desc',
+    cur = db.execute('select id, name, brand, user_id, image_path from sneakers WHERE display = ? order by id desc',
                  [one])
     sneakers = cur.fetchall()
+    return render_template('show_sneakers.html', sneakers=sneakers)
+
+@app.route('/search', methods=['GET','POST'])
+def search():
+    if request.method == 'POST':
+        one = 1
+        db = get_db()
+        cur = db.execute('SELECT id, name, brand, user_id, image_path FROM sneakers WHERE brand = ? AND display = ? order by id desc',
+                     [request.form['brand'], one])
+        sneakers = cur.fetchall()
+        return render_template('show_sneakers.html', sneakers=sneakers)
     return render_template('show_sneakers.html', sneakers=sneakers)
 
 #this will be similar to the show sneakers, but now we'll just show the comments
@@ -156,13 +170,16 @@ def add_sneaker():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             #end help from file upload tutorial
-            #insert into DB
+            #check if certain conditions are fulfilled
             if not session.get('logged_in'):
                 abort(401)
+            if session['isAdmin'] != 1:
+                abort(401)
+            #insert into DB
             one = 1
             db = get_db()
-            db.execute('insert into sneakers (name, image_path, display, user_id) values (?, ?, ?, ?)',
-                [request.form['title'], '/uploads/' + filename, one, session['id']])
+            db.execute('insert into sneakers (name, brand, image_path, display, user_id) values (?, ?, ?, ?, ?)',
+                [request.form['title'], request.form['brand'],'/uploads/' + filename, one, session['id']])
             db.commit()
             return redirect(url_for('show_sneakers'))
     return redirect(url_for('show_sneakers'))
@@ -237,19 +254,40 @@ def signup():
         else:
             pw_hash = generate_password_hash(request.form['password'])
             db = get_db()
-            db.execute('insert into users (username, password) values (?, ?)',
-                         [request.form['username'], pw_hash])
+            zero = 0
+            db.execute('insert into users (is_admin, username, password) values (?, ?, ?)',
+                         [zero, request.form['username'], pw_hash])
             db.commit()
             flash('You signed up!')
             return redirect(url_for('show_sneakers'))
     return render_template('signup.html', error=error)
+
+@app.route('/admin', methods=['POST','GET'])
+def admin():
+    error = None
+    if request.method == 'POST':
+        if request.form['password'] != request.form['password']:
+            error = 'Passwords dont match. Try again.'
+        elif request.form['admin_password'] != adminPassword:
+            error = 'Wrong admin password. Try again.'
+        else:
+            pw_hash = generate_password_hash(request.form['password'])
+            db = get_db()
+            one = 1
+            db.execute('insert into users (is_admin, username, password) values (?, ?, ?)',
+                         [one, request.form['username'], pw_hash])
+            db.commit()
+            flash('You signed up!')
+            return redirect(url_for('show_sneakers'))
+    return render_template('admin.html', error=error)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
     if request.method == 'POST':
         db = get_db()
-        cur = db.execute('SELECT COUNT(*), id, username, password FROM users WHERE username=?',
+        cur = db.execute('SELECT COUNT(*), id, username, is_admin, password FROM users WHERE username=?',
                  [request.form['username']])
         users = cur.fetchall()
         for row in users:
@@ -257,12 +295,14 @@ def login():
                  error = 'Couldnt log in. More than one user found with that name'
             elif row[0] == 0:
                  error = 'Couldnt log in. No user found with that name.'
-            elif check_password_hash(row[3], request.form['password']) == False:
+            elif check_password_hash(row[4], request.form['password']) == False:
                  error = 'Invalid password'
             else:
                  session['logged_in'] = True
                  session['id'] = row[1]
                  session['username'] = row[2]
+                 session['isAdmin'] = row[3]
+                 session['token'] = token_hex(16)
                  flash('You were logged in')
                  return redirect(url_for('show_sneakers'))
     return render_template('login.html', error=error)

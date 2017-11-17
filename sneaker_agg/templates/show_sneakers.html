@@ -3,22 +3,37 @@ http://flask.pocoo.org/docs/0.12/tutorial/templates/#tutorial-templates -->
 {% extends "layout.html" %}
 {% block body %}
   {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
-  {% if session.logged_in %}
+    <form action = "{{ url_for('search') }}" method=post enctype=multipart/form-data class=search>
+      <dl>
+        <dt>Search By Brand:
+        <dd><input type=text size=30 name=brand>
+        <dd><input type=submit value=Search>
+      </dl>
+    </form>
+  {% if session.logged_in and session.isAdmin == 1%}
     <form action="{{ url_for('add_sneaker') }}" method=post enctype=multipart/form-data class=add-sneaker>
       <dl>
         <dt>Upload New Sneaker<dt>
         <dt>Title:
         <dd><input type=text size=30 name=title>
+        <dt>Brand:
+        <dd><select name="brand">
+              <option value="Adidas">Adidas</option>
+              <option value="Nike">Nike</option>
+              <option value="Jordan">Jordan</option>
+              <option value="Other">Other</option>
+            </select>
         <dt>Picture:
         <dd><input type=file name=file>
         <dd><input type=submit value=Upload>
       </dl>
-
+    </form>
   {% endif %}
   <ul class=sneakers>
   {% for sneaker in sneakers %}
     <li><h2>{{ sneaker.name }}</h2>
       <img src= {{ sneaker.image_path }} > <br/>
+      {{ sneaker.brand }}
       <a href="{{ url_for('comments',sneakerid=sneaker.id) }}">Comments</a>
       <a href="{{ url_for('add_to_favorites',sneakerid=sneaker.id) }}">Add To Favorites</a>
       {% if session.id == sneaker.user_id %}

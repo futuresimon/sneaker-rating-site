@@ -1,6 +1,7 @@
 drop table if exists users;
 create table users (
   id integer primary key autoincrement,
+  is_admin integer not null,
   username text not null,
   password text not null
 );
@@ -31,6 +32,7 @@ drop table if exists sneakers;
 create table sneakers (
   id integer primary key autoincrement,
   name text,
+  brand text,
   image_path text,
   user_id integer,
   display integer not null,
