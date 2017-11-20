@@ -31,9 +31,8 @@ http://flask.pocoo.org/docs/0.12/tutorial/templates/#tutorial-templates -->
   {% endif %}
   <ul class=sneakers>
   {% for sneaker in sneakers %}
-    <li><h2>{{ sneaker.name }}</h2>
-      <img src= {{ sneaker.image_path }} > <br/>
-      {{ sneaker.brand }}
+    <li><h2>{{ sneaker.name|safe }} || {{ sneaker.brand }}</h2>
+      <img src= {{ sneaker.image_path }} alt= {{ sneaker.name }}> <br/>
       <a href="{{ url_for('comments',sneakerid=sneaker.id) }}">Comments</a>
       <a href="{{ url_for('add_to_favorites',sneakerid=sneaker.id) }}">Add To Favorites</a>
       {% if session.id == sneaker.user_id %}

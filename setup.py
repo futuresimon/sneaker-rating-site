@@ -1,3 +1,4 @@
+#from the flask set up tutorial http://flask.pocoo.org/docs/0.12/tutorial/
 from setuptools import setup
 
 setup(

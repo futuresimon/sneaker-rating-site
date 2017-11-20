@@ -12,14 +12,23 @@
     </dl>
   </form>
 
-  <ul class=messages>
+  <table class=messages>
+    <tr>
+      <th>From</th>
+      <th>Message</th>
+    </tr>
   {% for message in messages %}
   {% if session.id == message.reciever_id %}
-    <li><h2>{{ message.message_body }}</h2><br/>
-    <li>{{ message.sender_id }}
+    <tr>
+      <td>{{ message.username|safe }}</td>
+      <td>{{ message.message_body|safe }}</td>
+    </tr>
   {% endif %}
   {% else %}
-    <li><em>No messages so far. Try making some friends!</em>
+    <tr>
+      <td>No messages so far.</td>
+      <td>Try making some friends!</td>
+    </tr>
   {% endfor %}
-  </ul>
+</table>
 {% endblock %}

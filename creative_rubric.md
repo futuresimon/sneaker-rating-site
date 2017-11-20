@@ -30,12 +30,13 @@ x requests that contain sensitive information or modify something ont he server 
 x Safe from XSS attacks (all content is escaped on output) (3 points)
 x Safe from SQL injection attacks (2 points)
 CSRF tokens passed when editing or deleting posts (3 points)
-Session cookie is HTTP-only (3 points)
-page passes the W3C validator (2 points)
+x Session cookie is HTTP-only (3 points)
+x page passes the W3C validator (2 points)
 x passwords are salted and encrypted (2 points)
 
 creative portion (20 points)
 x shoes can be associated with brands and then searched by brand (10 points)
+x only admins may delete posts (5 points)
 
 to do:
 make sure user can only favorite a shoe once

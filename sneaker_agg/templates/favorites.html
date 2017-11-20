@@ -5,7 +5,7 @@
   <ul class=sneakers>
   {% for favorite in favorites %}
   {% if session.id == favorite.user_id %}
-    <li><h2>{{ favorite.name }}</h2><img src= {{ favorite.image_path }} > <br/>
+    <li><h2>{{ favorite.name|safe }}</h2><img src= {{ favorite.image_path }} alt = {{ favorite.name }} > <br/>
     <a href="{{ url_for('unfavorite',sneakerid=favorite.sneaker_id,userid=session.id) }}">Unfavorite</a>
   {% endif %}
   {% else %}

@@ -2,7 +2,7 @@
 # all the imports
 import os
 import sqlite3
-import secrets
+#import secrets
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, send_from_directory
 from werkzeug.security import generate_password_hash, \
@@ -27,7 +27,8 @@ app.config.update(dict(
     DATABASE=os.path.join(app.root_path, 'sneakeragg.db'),
     SECRET_KEY='RGzzMnLnaGUznOx2b1SSZvmeWuHa2dKY',
     USERNAME='admin',
-    PASSWORD='default'
+    PASSWORD='default',
+    SESSION_COOKIE_HTTPONLY = True
 ))
 app.config.from_envvar('SNEAKERAGG_SETTINGS', silent=True)
 
@@ -125,7 +126,6 @@ def send_message():
                 error = 'Couldnt send. No user found with that name.'
             else:
                 recieverid = row[1]
-                print(recieverid)
                 db.execute('INSERT INTO messages (message_body, sender_id, reciever_id) VALUES (?, ?, ?)',
                              [request.form['message'], session['id'], recieverid])
                 db.commit()
@@ -141,7 +141,7 @@ def profile(userid):
         abort(401)
     #one = 1
     db = get_db()
-    cur = db.execute('SELECT message_body, reciever_id, sender_id FROM messages WHERE reciever_id = ?',
+    cur = db.execute('SELECT messages.message_body, messages.reciever_id, users.username FROM messages, users WHERE messages.reciever_id = users.id AND messages.reciever_id = ?',
                  [userid])
     messages = cur.fetchall()
     return render_template('profile.html', messages = messages, userid = userid)
@@ -302,7 +302,7 @@ def login():
                  session['id'] = row[1]
                  session['username'] = row[2]
                  session['isAdmin'] = row[3]
-                 session['token'] = token_hex(16)
+                 session['token'] = os.urandom(24)
                  flash('You were logged in')
                  return redirect(url_for('show_sneakers'))
     return render_template('login.html', error=error)
@@ -313,5 +313,7 @@ def logout():
     session.pop('logged_in', None)
     session.pop('id', None)
     session.pop('username', None)
+    session.pop('isAdmin', None)
+    session.pop('token', None)
     flash('You were logged out')
     return redirect(url_for('show_sneakers'))
