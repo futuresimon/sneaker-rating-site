@@ -12,11 +12,8 @@ from werkzeug.utils import secure_filename
 #Path and allowed file types
 # from the flask upload file tutorial: http://flask.pocoo.org/docs/0.12/patterns/fileuploads/
 UPLOAD_FOLDER = '/home/simono/public_html/sneakeragg/sneakeragg/pictures'
-UPLOAD_FOLDER2 = 'home/simono/public_html/sneakeragg/sneakeragg/pictures'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 #end flask upload tutorial help
-
-adminPassword = 'supersecretpassword'
 
 #this set up is from the Flask quick start guide
 app = Flask(__name__) # create the application instance :)
@@ -27,7 +24,7 @@ app.config.update(dict(
     DATABASE=os.path.join(app.root_path, 'sneakeragg.db'),
     SECRET_KEY='RGzzMnLnaGUznOx2b1SSZvmeWuHa2dKY',
     USERNAME='admin',
-    PASSWORD='default',
+    PASSWORD='adminPassword',
     SESSION_COOKIE_HTTPONLY = True
 ))
 app.config.from_envvar('SNEAKERAGG_SETTINGS', silent=True)
@@ -65,14 +62,20 @@ def close_db(error):
         g.sqlite_db.close()
 #end help from quickstart guide
 
+#Main homepage function
 @app.route('/')
 def show_sneakers():
     one = 1
     db = get_db()
-    cur = db.execute('select id, name, brand, user_id, image_path from sneakers WHERE display = ? order by id desc',
+    cur = db.execute('SELECT id, name, brand, user_id, image_path FROM sneakers WHERE display = ? ORDER BY id DESC',
                  [one])
     sneakers = cur.fetchall()
     return render_template('show_sneakers.html', sneakers=sneakers)
+
+#About and search functions
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 @app.route('/search', methods=['GET','POST'])
 def search():
@@ -85,15 +88,19 @@ def search():
         return render_template('show_sneakers.html', sneakers=sneakers)
     return render_template('show_sneakers.html', sneakers=sneakers)
 
+#Add comment and retrieve comment functions
 #this will be similar to the show sneakers, but now we'll just show the comments
 @app.route('/comments/<sneakerid>')
 def comments(sneakerid):
     one = 1
     db = get_db()
-    cur = db.execute('select id, review, rating, user_id, sneaker_id FROM reviews WHERE sneaker_id = ? AND display = ? order by id desc',
+    cur = db.execute('SELECT id, review, rating, user_id, sneaker_id FROM reviews WHERE sneaker_id = ? AND display = ? order by id desc',
                  [sneakerid, one])
     comments = cur.fetchall()
-    return render_template('comments.html', comments = comments, sneakerid = sneakerid)
+    cur2 = db.execute('SELECT AVG(reviews.rating) AS averageRating, sneakers.name FROM reviews, sneakers WHERE reviews.sneaker_id = ? AND reviews.sneaker_id = sneakers.id  AND reviews.display = ?',
+                 [sneakerid, one])
+    average = cur2.fetchall()
+    return render_template('comments.html', comments = comments, averages = average, sneakerid = sneakerid)
 
 @app.route('/add_comment/<sneakerid>', methods=['POST'])
 def add_comment(sneakerid):
@@ -107,6 +114,7 @@ def add_comment(sneakerid):
     flash('New comment was successfully posted')
     return redirect(url_for('comments', sneakerid = sneakerid))
 
+#Send message, and profile functions
 @app.route('/send_message', methods=['GET','POST'])
 def send_message():
     if not session.get('logged_in'):
@@ -147,6 +155,7 @@ def profile(userid):
     return render_template('profile.html', messages = messages, userid = userid)
 
 
+#Upload, and delete sneaker functions.
 # from the flask upload file tutorial: http://flask.pocoo.org/docs/0.12/patterns/fileuploads/
 def allowed_file(filename):
     return '.' in filename and \
@@ -206,6 +215,7 @@ def uploaded_file(filename):
                                filename)
 #end derivation
 
+#Favorite, unfavorite, and retrieve favorites functions
 @app.route('/add_to_favorites/<sneakerid>')
 def add_to_favorites(sneakerid):
     if not session.get('logged_in'):
@@ -245,6 +255,8 @@ def favorites(userid):
         flash('You cant creep on other peoples favorites')
         return redirect(url_for('show_sneakers'))
 
+#Normal sign up, admin sign up, and log in functions
+
 @app.route('/signup', methods=['POST','GET'])
 def signup():
     error = None
@@ -268,7 +280,7 @@ def admin():
     if request.method == 'POST':
         if request.form['password'] != request.form['password']:
             error = 'Passwords dont match. Try again.'
-        elif request.form['admin_password'] != adminPassword:
+        elif request.form['admin_password'] != app.config['PASSWORD']:
             error = 'Wrong admin password. Try again.'
         else:
             pw_hash = generate_password_hash(request.form['password'])

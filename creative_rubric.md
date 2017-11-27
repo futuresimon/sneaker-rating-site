@@ -37,6 +37,7 @@ x passwords are salted and encrypted (2 points)
 creative portion (20 points)
 x shoes can be associated with brands and then searched by brand (10 points)
 x only admins may delete posts (5 points)
+x admins may post reviews from websites like Complex or KicksOnFire, etc... (5 points)
 
 to do:
 make sure user can only favorite a shoe once

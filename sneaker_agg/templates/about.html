@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h2>About SneakerAgg</h2>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  <p>SneakerAgg is a sneaker review aggregator that draws in reviews from users and sneaker review websites. Users can
+    sign up, log in, rate, and favorite any shoe on the website.</p>
+{% endblock %}
