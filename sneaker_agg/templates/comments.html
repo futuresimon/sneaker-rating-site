@@ -1,12 +1,13 @@
 {% extends "layout.html" %}
 {% block body %}
   {% for average in averages %}
-    <h2>{{ average.name }} {{ average.averageRating }}</h2>
-  {{% else %}}
+    <h2>{{ average.name }} <br>
+      User Score: {{ average.averageRating }}</h2>
+  {% else %}
     <h2>{{ average.name }} No reviews so far </h2>
   {% endfor %}
-
-  {% if session.logged_in %}
+<!-- If the user is an admin, they can post website reviews. Otherwise, they can post simple score reviews. -->
+  {% if session.logged_in and session.isAdmin == 0 %}
     <form action="{{ url_for('add_comment',sneakerid=sneakerid) }}" method=post class=add-entry>
       <dl>
         <dt>Comment:
@@ -19,15 +20,55 @@
               <option value=4>4</option>
               <option value=5>5</option>
             </select>
-        <dd><input type=submit value=Comment>
+        <dd><input type=submit value=Rate>
       </dl>
     </form>
   {% endif %}
-  <ul class=entries>
-  {% for comment in comments %}
-    <li><h2>{{ comment.review }}</h2>{{ comment.rating|safe }}
+  {% if session.logged_in and session.isAdmin == 1 %}
+    <form action="{{ url_for('add_comment_admin',sneakerid=sneakerid) }}" method=post class=add-entry>
+      <dl>
+        <dt>Website:
+        <dd><input type=text size=30 name=website>
+        <dt>Comment:
+        <dd><textarea name=website_comment rows="4" cols="30"></textarea>
+        <dd><input type=submit value=Rate>
+      </dl>
+    </form>
+  {% endif %}
+  <!-- SNEAKER WEBSITE COMMENTS -->
+<table>
+    <tr>
+      <th>Website</th>
+      <th>Website Comment</th>
+    </tr>
+  {% for comment in websiteComments %}
+      <tr>
+        <td>{{ comment.website|safe }}</td>
+        <td>{{ comment.review }}</td>
+      </tr>
   {% else %}
-    <li><em>Unbelievable.  No entries here so far</em>
+      <tr>
+        <td>No website ratings so far.</td>
+        <td></td>
+      </tr>
   {% endfor %}
-  </ul>
+</table>
+  <!-- USER COMMENTS -->
+<table>
+    <tr>
+      <th>User Rating</th>
+      <th>User Comment</th>
+    </tr>
+  {% for comment in comments %}
+      <tr>
+        <td>{{ comment.rating|safe }}</td>
+        <td>{{ comment.review }}</td>
+      </tr>
+  {% else %}
+      <tr>
+        <td>No ratings so far. Be the first!</td>
+        <td></td>
+      </tr>
+  {% endfor %}
+</table>
 {% endblock %}

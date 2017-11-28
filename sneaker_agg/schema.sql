@@ -18,6 +18,18 @@ create table reviews (
   FOREIGN KEY (sneaker_id) REFERENCES sneakers(id)
 );
 
+drop table if exists admin_reviews;
+create table admin_reviews (
+  id integer primary key autoincrement,
+  website text,
+  review text,
+  user_id integer,
+  sneaker_id integer,
+  display integer not null,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (sneaker_id) REFERENCES sneakers(id)
+);
+
 drop table if exists messages;
 create table messages (
   id integer primary key autoincrement,

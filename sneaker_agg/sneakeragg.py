@@ -100,7 +100,10 @@ def comments(sneakerid):
     cur2 = db.execute('SELECT AVG(reviews.rating) AS averageRating, sneakers.name FROM reviews, sneakers WHERE reviews.sneaker_id = ? AND reviews.sneaker_id = sneakers.id  AND reviews.display = ?',
                  [sneakerid, one])
     average = cur2.fetchall()
-    return render_template('comments.html', comments = comments, averages = average, sneakerid = sneakerid)
+    cur3 = db.execute('SELECT id, website, review, user_id, sneaker_id FROM admin_reviews WHERE sneaker_id =? AND display = ? ORDER BY id DESC',
+                 [sneakerid, one])
+    websiteComments = cur3.fetchall()
+    return render_template('comments.html', websiteComments = websiteComments, comments = comments, averages = average, sneakerid = sneakerid)
 
 @app.route('/add_comment/<sneakerid>', methods=['POST'])
 def add_comment(sneakerid):
@@ -113,6 +116,21 @@ def add_comment(sneakerid):
     db.commit()
     flash('New comment was successfully posted')
     return redirect(url_for('comments', sneakerid = sneakerid))
+
+@app.route('/add_comment_admin/<sneakerid>', methods=['POST'])
+def add_comment_admin(sneakerid):
+    if not session.get('logged_in'):
+        abort(401)
+    if session['isAdmin'] != 1:
+        abort(401)
+    one = 1
+    db = get_db()
+    db.execute('insert into admin_reviews (website, review, user_id, sneaker_id, display) values (?, ?, ?, ?, ?)',
+                 [request.form['website'], request.form['website_comment'],session['id'], sneakerid, one])
+    db.commit()
+    flash('New website comment was successfully posted')
+    return redirect(url_for('comments', sneakerid = sneakerid))
+
 
 #Send message, and profile functions
 @app.route('/send_message', methods=['GET','POST'])

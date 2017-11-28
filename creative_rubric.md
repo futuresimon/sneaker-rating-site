@@ -26,7 +26,7 @@ x users can send messages to others users, which are posted to that users' homep
 
 best practices (20 points)
 x code is well formated and easy to read, with proper commenting (2 points)
-x requests that contain sensitive information or modify something ont he server are performed via POST not GET (3 points)
+x requests that contain sensitive information or modify something on the server are performed via POST not GET (3 points)
 x Safe from XSS attacks (all content is escaped on output) (3 points)
 x Safe from SQL injection attacks (2 points)
 CSRF tokens passed when editing or deleting posts (3 points)

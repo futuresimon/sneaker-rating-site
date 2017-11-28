@@ -6,15 +6,15 @@
   <h1><a href = "{{ url_for('show_sneakers') }}" >SneakerAgg</a></h1>
   <div class=metanav>
   {% if not session.logged_in %}
-    <a href="{{ url_for('login') }}">log in</a>
-    <a href="{{ url_for('signup') }}">sign up</a>
-    <a href="{{ url_for('admin') }}">admin sign up</a>
-    <a herf="{{ url_for('about') }}">about</a>
+    <a href="{{ url_for('about') }}">About</a>
+    <a href="{{ url_for('admin') }}">Admin Sign Up</a>
+    <a href="{{ url_for('signup') }}">Sign Up</a>
+    <a href="{{ url_for('login') }}">Log In</a>
   {% else %}
+    <a href="{{ url_for('about') }}">About</a>
+    <a href="{{ url_for('profile', userid = session.id) }}">View Messages</a>
     <a href="{{ url_for('favorites', userid = session.id) }}">Favorites</a>
     <a href="{{ url_for('logout') }}">Log Out</a>
-    <a href="{{ url_for('profile', userid = session.id) }}">View Messages</a>
-    <a herf="{{ url_for('about') }}">about</a>
   {% endif %}
   </div>
   {% for message in get_flashed_messages() %}
