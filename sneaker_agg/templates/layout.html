@@ -7,11 +7,15 @@
   <div class=metanav>
   {% if not session.logged_in %}
     <a href="{{ url_for('about') }}">About</a>
+    <a href="{{ url_for('table') }}">Table View</a>
+    <a href="{{ url_for('show_sneakers') }}">Catalog View</a><br>
     <a href="{{ url_for('admin') }}">Admin Sign Up</a>
     <a href="{{ url_for('signup') }}">Sign Up</a>
     <a href="{{ url_for('login') }}">Log In</a>
   {% else %}
     <a href="{{ url_for('about') }}">About</a>
+    <a href="{{ url_for('table') }}">Table View</a>
+    <a href="{{ url_for('show_sneakers') }}">Catalog View</a><br>
     <a href="{{ url_for('profile', userid = session.id) }}">View Messages</a>
     <a href="{{ url_for('favorites', userid = session.id) }}">Favorites</a>
     <a href="{{ url_for('logout') }}">Log Out</a>

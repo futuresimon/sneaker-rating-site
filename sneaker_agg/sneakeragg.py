@@ -72,6 +72,15 @@ def show_sneakers():
     sneakers = cur.fetchall()
     return render_template('show_sneakers.html', sneakers=sneakers)
 
+@app.route('/table')
+def table():
+    one = 1
+    db = get_db()
+    cur = db.execute('SELECT id, name, brand, user_id FROM sneakers WHERE display = ? ORDER BY id DESC',
+                 [one])
+    sneakers = cur.fetchall()
+    return render_template('table.html', sneakers=sneakers)
+
 #About and search functions
 @app.route('/about')
 def about():
