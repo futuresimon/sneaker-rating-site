@@ -27,11 +27,11 @@ x users can send messages to others users, which are posted to that users' homep
 best practices (20 points)
 x code is well formated and easy to read, with proper commenting (2 points)
 x requests that contain sensitive information or modify something on the server are performed via POST not GET (3 points)
-x Safe from XSS attacks (all content is escaped on output) (3 points)
+Safe from XSS attacks (all content is escaped on output) (3 points)
 x Safe from SQL injection attacks (2 points)
 CSRF tokens passed when editing or deleting posts (3 points)
 x Session cookie is HTTP-only (3 points)
-x page passes the W3C validator (2 points)
+page passes the W3C validator (2 points)
 x passwords are salted and encrypted (2 points)
 
 creative portion (20 points)
@@ -39,6 +39,3 @@ x shoes can be associated with brands and then searched by brand (5 points)
 x only admins may delete posts (5 points)
 x admins may post reviews from websites like Complex or KicksOnFire, etc... (5 points)
 x users can switch to grid view (5 points)
-
-to do:
-make sure user can only favorite a shoe once
