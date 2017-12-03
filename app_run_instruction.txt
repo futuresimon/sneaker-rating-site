@@ -1,0 +1,6 @@
+cd public_html/sneakeragg
+export FLASK_APP=sneakeragg.py
+export FLASK_DEBUG=true
+cd sneakeragg
+(optional) flask initdb
+flask run --host=0.0.0.0
